@@ -51,12 +51,17 @@ public class SetCardComponent extends JComponent implements KeyListener,
     public void paintComponent (Graphics g)
     {
         Graphics2D g2 = (Graphics2D) g;
+        g2.setBackground(Color.BLACK);
+        g2.clearRect(0, 0, getParent().getWidth(), getParent().getHeight());
         
         if (isSelected)
             this.setBorder(BorderFactory.createLineBorder(Color.RED, 5));
         else if(!isSelected)
              this.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+        // this.setBackground(Color.BLACK);
+        // g2.setBackground(Color.BLACK);
         
+        // TODO: This is gross
         if(this.getNumShapes() == 1)
         {
             if(this.getShape() == 1)

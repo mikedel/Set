@@ -30,7 +30,7 @@ public class Set //extends JComponent
         cardsSelected = new ArrayList<SetCardComponent>();
         
         gameBoard = new JPanel();
-        gameBoard.setLayout(new GridLayout(2, 6, 50, 50));
+        gameBoard.setLayout(new GridLayout(2, 6, 10, 10));
         
         endGame = new JButton("End Game");
         
@@ -68,6 +68,19 @@ public class Set //extends JComponent
         frame.getContentPane().add(gameBoard);
         frame.setVisible(true); 
     }
+
+    public void resetShuffledBoard() {
+        for (SetCardComponent current : cardsInPlay) {
+            deck.addSetCard(current);
+        }
+        cardsInPlay.clear();
+        deck.shuffle();
+        int count = Math.min(12, deck.getSize());
+        for (int i = 0; i < count; i++) {
+            cardsInPlay.add(deck.removeTopSetCard());
+        }
+        this.setBoard();
+    }
     
     public void printGame()
     {
@@ -98,11 +111,11 @@ public class Set //extends JComponent
         
         this.printGame();
         this.setBoard();
-        if(!this.possibleSet())
-                    {
-                        gameOver = true;
-                        System.out.println("There are no more sets in play.");
-                    }
+        if(!this.possibleSet()) {
+            // gameOver = true;
+            System.out.println("There are no more sets in play.  Shuffling and resetting");
+            this.resetShuffledBoard();
+        }
         while(cardsInPlay.size() != 0 && !gameOver)
         {
             while(cardsSelected.size() != 3)

@@ -54,6 +54,6 @@ public class Deck
     {
         Random gen = new Random();
         for (int i = 0; i < 2000; i++)
-            this.addSetCard (this.removeSetCard (gen.nextInt (81)));
+            this.addSetCard (this.removeSetCard (gen.nextInt (deck.size())));
     } 
 }
