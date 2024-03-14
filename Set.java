@@ -4,8 +4,7 @@ import java.awt.event.*;
 import java.awt.geom.*;
 import java.util.*;
 
-public class Set //extends JComponent 
-{
+public class Set { //extends JComponent 
     //Instance Fields
     private Color fillColor;
     private ArrayList<SetCardComponent> cardsInPlay;
@@ -19,8 +18,7 @@ public class Set //extends JComponent
     
     
     //Constructor
-    public Set ()
-    {
+    public Set() {
         fillColor = Color.BLACK;
         
         cardsInPlay = new ArrayList<SetCardComponent>();
@@ -48,15 +46,13 @@ public class Set //extends JComponent
         
         gameOver = false;
         
-        for (int i = 0; i < 12; i++)
-        {
+        for (int i = 0; i < 12; i++) {
             cardsInPlay.add(deck.removeTopSetCard());
         }
     }//end constructor
     
     
-    public void setBoard ()
-    {
+    public void setBoard() {
         frame.remove(gameBoard);
         gameBoard.removeAll();
         for (SetCardComponent current : cardsInPlay)
@@ -82,25 +78,19 @@ public class Set //extends JComponent
         this.setBoard();
     }
     
-    public void printGame()
-    {
+    public void printGame() {
         System.out.println("You have collected " + (81 - (deck.getSize() + 12))/3 + " sets and there are " + (deck.getSize() + 12)/3 + " sets left.");
     }
     
-    public void printGameOver()
-    {
+    public void printGameOver() {
         System.out.println("Game Over! You collected " + (81 - (deck.getSize() + 12))/3 + " sets!");
     }
     
     
-    public void play ()
-    {  
-        class ButtonListener implements ActionListener
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                if(e.getActionCommand().equals("End Game"))
-                {
+    public void play () {  
+        class ButtonListener implements ActionListener {
+            public void actionPerformed(ActionEvent e) {
+                if(e.getActionCommand().equals("End Game")) {
                     gameOver = true;
                 }
             }//end actionPerformed method
@@ -108,54 +98,49 @@ public class Set //extends JComponent
         }//end ButtonListener class
         ActionListener listener = new ButtonListener();
         endGame.addActionListener(listener);
+        if (gameOver) {
+            this.resetShuffledBoard();
+            gameOver = false;
+        }
         
         this.printGame();
-        this.setBoard();
+        // this.setBoard();
+        this.resetShuffledBoard(); // shuffling after each set seems to work better
+        // TODO: refactor following if to be a while, which checks to see if there is a possible
+        // set remaining in the entire deck + cards in play before iterating
         if(!this.possibleSet()) {
             // gameOver = true;
             System.out.println("There are no more sets in play.  Shuffling and resetting");
             this.resetShuffledBoard();
         }
-        while(cardsInPlay.size() != 0 && !gameOver)
-        {
-            while(cardsSelected.size() != 3)
-            {
-                for(SetCardComponent currentCard : cardsInPlay)
-                {
-                    if(currentCard.getIsSelected())
-                    {
-                        if(!cardsSelected.contains(currentCard))
-                        {
+        while(cardsInPlay.size() != 0 && !gameOver) {
+            while(cardsSelected.size() != 3) {
+                for(SetCardComponent currentCard : cardsInPlay) {
+                    if(currentCard.getIsSelected()) {
+                        if(!cardsSelected.contains(currentCard)) {
                             cardsSelected.add(currentCard);
                         }
                     }
-                    else if (!currentCard.getIsSelected())
-                    {
+                    else if (!currentCard.getIsSelected()) {
                         if(cardsSelected.contains(currentCard))
                             cardsSelected.remove(cardsSelected.indexOf(currentCard));
                     }
                 }
             }
             
-            if(cardsSelected.size() == 3)
-            {
-                if (!checkSet(cardsSelected.get(0), cardsSelected.get(1), cardsSelected.get(2)))
-                {
-                    for (int i = cardsSelected.size() - 1; i >= 0; i--)
-                    {
+            if(cardsSelected.size() == 3) {
+                if (!checkSet(cardsSelected.get(0), cardsSelected.get(1), cardsSelected.get(2))) {
+                    for (int i = cardsSelected.size() - 1; i >= 0; i--) {
                         cardsSelected.get(i).setIsSelected(false);
                         cardsSelected.remove(i);
                     }
                     System.out.println("That was not a Set. Try Again!");
                 }
                 
-                else //if (checkSet(cardsSelected.get(0), cardsSelected.get(1), cardsSelected.get(2)))
-                {
+                else { //if (checkSet(cardsSelected.get(0), cardsSelected.get(1), cardsSelected.get(2))) 
                     System.out.println("That was a Set!  Those 3 cards are now removed and replaced with new cards.");
-                    for(int i = cardsInPlay.size() - 1; i >= 0; i--)
-                    {
-                        if(cardsSelected.contains(cardsInPlay.get(i)))
-                        {
+                    for(int i = cardsInPlay.size() - 1; i >= 0; i--) {
+                        if(cardsSelected.contains(cardsInPlay.get(i))) {
                             cardsInPlay.remove(i);
                         }
                     }
@@ -163,10 +148,13 @@ public class Set //extends JComponent
                     for(SetCardComponent cardListener : cardsInPlay)
                         cardListener.removeMouseListener(cardListener);
                     cardsSelected.removeAll(cardsSelected);
-                    
-                    for (int i = 0; i < 3; i++)
-                    {
-                        cardsInPlay.add(deck.removeTopSetCard());
+                    if (deck.getSize() >= 3) {
+                        for (int i = 0; i < 3; i++) {
+                            cardsInPlay.add(deck.removeTopSetCard());
+                        }
+                    }
+                    if (cardsInPlay.size() == 0) {
+                        System.out.println("You Win!!!!!");
                     }
                     this.play();
                 }
@@ -177,14 +165,11 @@ public class Set //extends JComponent
         
     }//end play method
     
-    public boolean possibleSet()
-    {
-        for(SetCardComponent a : cardsInPlay)
-        {
-            for(SetCardComponent b : cardsInPlay)
-            {
-                for(SetCardComponent c : cardsInPlay)
-                {
+    public boolean possibleSet() {
+        // TODO: optimze this better
+        for(SetCardComponent a : cardsInPlay) {
+            for(SetCardComponent b : cardsInPlay) {
+                for(SetCardComponent c : cardsInPlay) {
                     if(!a.equals(b) && !a.equals(c) && !b.equals(c) && this.checkSet(a,b,c))
                         return true;
                     
@@ -194,8 +179,7 @@ public class Set //extends JComponent
         return false;
     }
     
-    public boolean checkSet(SetCardComponent a, SetCardComponent b, SetCardComponent c)
-    {
+    public boolean checkSet(SetCardComponent a, SetCardComponent b, SetCardComponent c) {
         if((a.getColor() == b.getColor() && a.getColor() == c.getColor()) || (a.getColor() != b.getColor() && a.getColor() != c.getColor() && b.getColor() != c.getColor()))
         {
             if((a.getShade() == b.getShade() && a.getShade() == c.getShade()) || (a.getShade() != b.getShade() && a.getShade() != c.getShade() && b.getShade() != c.getShade()))
@@ -212,8 +196,7 @@ public class Set //extends JComponent
         return false;
     }
     
-    public JPanel getGameBoard()
-    {
+    public JPanel getGameBoard() {
         return gameBoard;
     }
 }
